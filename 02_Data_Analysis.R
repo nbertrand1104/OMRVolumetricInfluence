@@ -62,6 +62,9 @@ vol_influ_diff <- vol_influ %>%
   
 class(vol_influ_diff$month_f)
 view(vol_influ_diff)
+
+#Figures----
+
 #scatter plot 
 ggplot(vol_influ_diff, aes(x= month_f, y=NDOI_Minus_totalEXP_percent)) + 
   geom_point()+
@@ -83,7 +86,11 @@ ggplot(vol_influ_diff, aes(x=month_f, y=NDOI_Minus_totalEXP_percent)) +
 #box plot of all alternatives by month
 ggplot(vol_influ_diff, aes(x=month_f, y=NDOI_Minus_totalEXP_percent, fill = Alt)) + 
   geom_boxplot(width=0.5)+
-  labs(title = "All Alterntives By Months")
+  labs(title = "All Alterntives By Months")+
+  xlab("Month")+
+  ylab("Percent Exported from NDOI")+
+  theme_bw()+
+  theme(legend.position = "bottom")
 
 
 
@@ -124,6 +131,9 @@ ggplot(vol_influ_diff, aes(x=month_f, y=NDOI_Minus_totalEXP_percent)) +
 ggplot(vol_influ_diff, aes(x=month_f, y=NDOI_Minus_totalEXP_percent, fill = Alt)) + 
   geom_boxplot(width=1)+
   labs(title = "All Alterntives By Water Year Type")+
+  xlab("Month")+
+  ylab("Percent Exported from NDOI")+
+  theme_bw()+
   theme(legend.position = "bottom")+
   facet_wrap(~Wytype)
 
@@ -131,8 +141,11 @@ ggplot(vol_influ_diff, aes(x=month_f, y=NDOI_Minus_totalEXP_percent, fill = Alt)
 ggplot(vol_influ_diff, aes(x=month_f, y=NDOI_Minus_totalEXP_percent, fill = Wytype)) + 
   geom_boxplot(width=1)+
   labs(title = "All Alterntives By Water Year Type")+
+  xlab("Month")+
+  ylab("Percent Exported from NDOI")+
   theme(legend.position = "bottom")+
   facet_wrap(~Alt)
+
 
 
 ggplot(vol_influ_diff, aes(x=month_f, y=NDOI_Minus_totalEXP_percent, fill = Wytype)) + 
