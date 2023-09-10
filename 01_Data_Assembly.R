@@ -16,8 +16,8 @@ library(tidyverse)
 # I saved each variables variable name and file path below but commented out.
 
 #NDOI----
-#name the parameter being imported form the excel file
-variable_name <- 'NDOI'
+#name the parameter being imported from the excel file
+variable_name <- 'dinflow'
 #enter the file path of the specific file to imported
 file_path <- "Data/Reclamation_2021LTO_CS3_DeltaInflow_BA_2022MED_rev01_20230809_EXP1_EXP3_NAA_ALT2-v1-woutTUCP_ALT2-v1-wTUCP.xlsx"
 
@@ -41,19 +41,19 @@ for (i in 1:length(mysheetlist)){
 mysheets_fromexcel
 
 variable_combined <- map_dfr(mysheets_fromexcel, bind_rows)  
-
+view(variable_combined)
 df_all <-as.data.frame(variable_combined)
 assign((variable_name),df_all)
 
 #Object viewing----
 #to view dataframe enter the same name as used in "variable_name" below
-view()
+view(NDOI)
 
 #Write file----
 
 #Save .csv file from object named from "variable_name"
 
-#write.csv(NDOI, "Data/NDOI_AllAlts.csv")
+write.csv(dinflow, "Data/dinflow_AllAlts.csv")
 
 ############################
 
