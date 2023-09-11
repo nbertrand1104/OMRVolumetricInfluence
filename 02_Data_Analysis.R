@@ -177,8 +177,7 @@ tbl <- vol_influ_diff %>%
          "month",
          "Wytype", 
          "dinflow",
-         "dinflow_Minus_totalEXP_percent"
-         ) %>% 
+         "dinflow_Minus_totalEXP_percent") %>% 
   group_by(Alt, month) %>% 
   summarize(mean_dinflow = mean(dinflow),
             var_dinflow = var(dinflow),
@@ -186,7 +185,19 @@ tbl <- vol_influ_diff %>%
             .groups = "keep")
 
 view(tbl)
+#this table is formatted for export as a csv for manipulation in excel
 
+expt_tbl <- tbl %>% 
+  pivot_wider(names_from = Alt,
+              values_from = c("mean_dinflow",
+                              "var_dinflow",
+                              "sd_dinflow"))
+  
+view(expt_tbl)
+
+write_excel_csv(expt_tbl, "Data/tableforcopyandpaste.csv")
+
+#list of column headers
 # "Date",
 # "DO",                         
 # "Alt",                        
