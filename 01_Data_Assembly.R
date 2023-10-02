@@ -15,11 +15,11 @@ library(tidyverse)
 #that should be all that is necessary to create the object for the calsim variable needed.
 # I saved each variables variable name and file path below but commented out.
 
-#NDOI----
+#Delta Inflow----
 #name the parameter being imported from the excel file
 variable_name <- 'dinflow'
 #enter the file path of the specific file to imported
-file_path <- "Data/Reclamation_2021LTO_CS3_DeltaInflow_BA_2022MED_rev01_20230809_EXP1_EXP3_NAA_ALT2-v1-woutTUCP_ALT2-v1-wTUCP.xlsx"
+file_path <- "Data/Reclamation_2021LTO_CS3 _DeltaInflow_2022MED_rev02_20230914_EXP1_EXP3_NAA_ALT2v1woutTUCP_ALT2v1wTUCP_ALT2v2_AT2v3_ALT1_ALT4_ALT3.xlsx"
 
 #script executed on the datafile ----
 
@@ -29,25 +29,24 @@ mysheets_fromexcel <- list()
 mysheetlist <- excel_sheets(path=file_path)
 i=1
 for (i in 1:length(mysheetlist)){
-  tempdf <- read_excel(path= file_path, sheet = mysheetlist[i])
+  tempdf <- read_excel(path= file_path,col_names = FALSE, col_types = c("date", "text"), sheet = mysheetlist[i])
   tempdf$sheetname <- mysheetlist[i]
   tempdf <- tempdf %>% 
-    slice(7:nrow(tempdf)) %>% 
-    rename("Alt" = sheetname, Date =`...1`) %>% 
-    rename_with(~variable_name, CALSIM)
+    slice(13:nrow(tempdf)) %>% 
+    rename("Alt" = sheetname, Date = "...1", dinflow = "...2")
+  tempdf$Date <-as.Date(tempdf$Date) 
   mysheets_fromexcel[[i]] <- tempdf 
 }
 
-mysheets_fromexcel
-
+#mysheets_fromexcel
 variable_combined <- map_dfr(mysheets_fromexcel, bind_rows)  
-view(variable_combined)
+#view(variable_combined)
 df_all <-as.data.frame(variable_combined)
 assign((variable_name),df_all)
 
 #Object viewing----
 #to view dataframe enter the same name as used in "variable_name" below
-view(NDOI)
+#view(dinflow)
 
 #Write file----
 
@@ -61,7 +60,7 @@ write.csv(dinflow, "Data/dinflow_AllAlts.csv")
 #name the parameter being imported form the excel file
 variable_name <- 'DeltaOutflow'
 #enter the file path of the specific file to imported
-file_path <- "Data/Reclamation_2021LTO_CS3_DO_BA_2022MED_rev01_20230809_EXP1_EXP3_NAA_ALT2-v1-woutTUCP_ALT2-v1-wTUCP.xlsx"
+file_path <- "Data/Reclamation_2021LTO_CS3 _DO_2022MED_rev02_20230913_EXP1_EXP3_NAA_ALT2v1woutTUCP_ALT2v1wTUCP_ALT2v2_AT2v3_ALT1_ALT4_ALT3.xlsx"
 
 #script executed on the datafile ----
 
@@ -91,13 +90,14 @@ DO <-as.data.frame(variable_combined)
 
 #Object viewing----
 #to view dataframe enter the same name as used in "variable_name" below
-view(DO)
+
+#view(DO)
 
 #Write file----
 
 #Save .csv file from object named from "variable_name"
 
-#write.csv(DO, "Data/DO_AllAlts.csv")
+write.csv(DO, "Data/DO_AllAlts.csv")
 
 ############################
 
@@ -108,7 +108,7 @@ view(DO)
 #name the parameter being imported form the excel file
 variable_name <- 'Exports'
 #enter the file path of the specific file to imported
-file_path <- "Data/Reclamation_2021LTO_CS3_Exports_WYT_BA_2022MED_rev01_20230809_EXP1_EXP3_NAA_ALT2-v1-woutTUCP_ALT2-v1-wTUCP.xlsx"
+file_path <- "Data/Reclamation_2021LTO_CS3 _Exports_WYT_2022MED_rev02_20230913_EXP1_EXP3_NAA_ALT2v1woutTUCP_ALT2v1wTUCP_ALT2v2_AT2v3_ALT1_ALT4_ALT3_edit.xlsx"
 
 #script executed on the datafile ----
 
@@ -137,20 +137,20 @@ EXP <-as.data.frame(variable_combined)
 
 #Object viewing----
 #to view dataframe enter the same name as used in "variable_name" below
-view(EXP)
+#view(EXP)
 
 #Write file----
 
 #Save .csv file from object named from "variable_name"
 
-#write.csv(EXP, "Data/EXP_AllAlts.csv")
+write.csv(EXP, "Data/EXP_AllAlts.csv")
 ################################################
 
 #Water Year type
 #this uses the file I created by extracting the water year type tab from the exports data file
 
 #load data ----
-Wateryears <- read_excel("Data/Reclamation_2021LTO_CS3_WYT_BA_2022MED_rev01_20230809_EXP1_EXP3_NAA_ALT2-v1-woutTUCP_ALT2-v1-wTUCP.xlsx", 
+Wateryears <- read_excel("Data/Reclamation_2021LTO_CS3 _Exports_WYT_2022MED_rev02_20230913_EXP1_EXP3_NAA_ALT2v1woutTUCP_ALT2v1wTUCP_ALT2v2_AT2v3_ALT1_ALT4.xlsx", 
                                                                                                                  sheet = "WYT_Sac Valley Index", col_names = FALSE, 
                                                                                                                  col_types = c("numeric", "numeric", "numeric", 
                                                                                                                                "numeric", "numeric", "skip"), skip = 3)
@@ -175,4 +175,7 @@ write.csv(WYtype, "Data/WYtype_All.csv")
 
 
 #Files are exported as .csv files to then be compiled in a separate script
+
+
+
 

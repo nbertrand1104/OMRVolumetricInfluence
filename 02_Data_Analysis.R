@@ -5,7 +5,7 @@
 #Packages -----
 library(tidyverse)
 library(readr)
-
+                              
 #load data files----
 
 #Delta Outflow
@@ -50,7 +50,8 @@ DOtodinflowtoEXPtoWY_join <- left_join(DOtodinflowtoEXP_join, WYtype_All,
 #Rename object for ease
 vol_influ <- DOtodinflowtoEXPtoWY_join
 
-#View(vol_influ)
+View(vol_influ)
+class(vol_influ$Dinflow)
 #Manipulates the data table and created variables for the visualizations
 vol_influ_diff <- vol_influ %>% 
   mutate(totalEXP = JonesExp + BanksExpSWP + BanksExpCVP) %>% 
@@ -61,7 +62,7 @@ vol_influ_diff <- vol_influ %>%
   mutate(year = year(Date))
   
 class(vol_influ_diff$month_f)
-view(vol_influ_diff)
+#view(vol_influ_diff)
 
 #Figures----
 
@@ -90,12 +91,13 @@ ggplot(vol_influ_diff, aes(x=month_f, y=dinflow_Minus_totalEXP_percent, fill = A
   xlab("Month")+
   ylab("Percent Exported from dinflow")+
   theme_bw()+
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom")+
+  scale_fill_brewer(palette="Paired")
 
 
 
 #filtered by alternative
-Alt2v1woTUCP <- vol_influ_diff %>% filter(Alt == "ALT2 v1 072523 woTUCP")
+Alt2v1woTUCP <- vol_influ_diff %>% filter(Alt == "ALT2 v1 090723 woTUCP")
 
 ggplot(Alt2v1woTUCP, aes(x= month_f, y=dinflow_Minus_totalEXP_percent, group = year)) + 
   geom_line()+
@@ -104,15 +106,14 @@ ggplot(Alt2v1woTUCP, aes(x= month_f, y=dinflow_Minus_totalEXP_percent, group = y
   facet_grid(Wytype~ Alt)
 
 #This plots the density curves of the monthly percentages across alternatives
-#
-# library(plyr)
-# mu <- ddply(vol_influ_diff, "Alt", summarise, grp.mean=mean(dinflow_Minus_totalEXP_percent))
-# 
-# ggplot(vol_influ_diff, aes(x=dinflow_Minus_totalEXP_percent, color=Alt)) +
-#   geom_density()+
-#   #geom_vline(data=mu, aes(xintercept=grp.mean, color=Alt),linetype="dashed")+
-#   labs(title = "Densityplot of the % dinflow exported by month")+
-#   facet_wrap(~month_f)
+library(plyr)
+mu <- ddply(vol_influ_diff, "Alt", summarise, grp.mean=mean(dinflow_Minus_totalEXP_percent))
+
+ggplot(vol_influ_diff, aes(x=dinflow_Minus_totalEXP_percent, color=Alt)) +
+  geom_density()+
+  #geom_vline(data=mu, aes(xintercept=grp.mean, color=Alt),linetype="dashed")+
+  labs(title = "Densityplot of the % dinflow exported by month")+
+  facet_wrap(~month_f)
 
 filtered <- vol_influ_diff %>% filter(month_f == 6)
 ggplot(filtered, aes(x=dinflow_Minus_totalEXP_percent, color=Alt)) +
@@ -147,16 +148,22 @@ ggplot(vol_influ_diff, aes(x=month_f, y=dinflow_Minus_totalEXP_percent, fill = W
   facet_wrap(~Alt)
 
 
-
 ggplot(vol_influ_diff, aes(x=month_f, y=dinflow_Minus_totalEXP_percent, fill = Wytype)) + 
   geom_boxplot(width=1)+
   labs(title = "All Alternatives By Water Year Type")+
   theme(legend.position = "bottom")+
   facet_wrap(~Alt)
 
+ggplot(vol_influ_diff, aes(x=Alt, y=dinflow_Minus_totalEXP_percent)) + 
+  geom_boxplot(width=0.5)+
+  labs(title = "boxplots by month by alt")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  facet_grid(~month_f)
+
+
 #filters to create a single figure for an alt
 filtered2 <- vol_influ_diff %>% filter(Alt == "ALT2 v1 072523 wTUCP")
-view(filtered2)
+#view(filtered2)
 ggplot(filtered2, aes(x=month_f, y=dinflow_Minus_totalEXP_percent, fill = Wytype)) + 
   geom_boxplot(width=1)+
   labs(title = "ALT2 v1 072523 wTUCP")+
@@ -166,7 +173,7 @@ ggplot(filtered2, aes(x=month_f, y=dinflow_Minus_totalEXP_percent, fill = Wytype
 
 #This section will work on formatting a table for export to the documents.
 
-View(vol_influ_diff)
+#View(vol_influ_diff)
 colnames(vol_influ_diff)
 
 #selects down to relevant columns
@@ -179,12 +186,13 @@ tbl <- vol_influ_diff %>%
          "dinflow",
          "dinflow_Minus_totalEXP_percent") %>% 
   group_by(Alt, month) %>% 
-  summarize(mean_dinflow = mean(dinflow),
+  summarise(mean_dinflow = mean(dinflow),
             var_dinflow = var(dinflow),
             sd_dinflow = sd(dinflow), 
             .groups = "keep")
-
+?summarize
 view(tbl)
+
 #this table is formatted for export as a csv for manipulation in excel
 
 expt_tbl <- tbl %>% 
@@ -195,9 +203,43 @@ expt_tbl <- tbl %>%
   
 view(expt_tbl)
 
-write_excel_csv(expt_tbl, "Data/tableforcopyandpaste.csv")
+#write_excel_csv(expt_tbl, "Data/tableforcopyandpaste.csv")
+###############
 
-#list of column headers
+#
+comp_tbl <- vol_influ_diff %>% 
+  select("Alt",                        
+         "year", 
+         "month",
+         "Wytype", 
+         "dinflow_Minus_totalEXP_percent") %>% 
+  pivot_wider(names_from = Alt,
+              values_from = c("dinflow_Minus_totalEXP_percent")) %>% 
+  group_by(Wytype, month)
+
+view(comp_tbl)
+
+diff_tbl <- comp_tbl %>% group_by(Wytype,year, month) %>% 
+  reframe(NAAminusEXP1 = `NAA 090723`-`EXP1 090623`,
+            NAAminusEXP3 = `NAA 090723`-`EXP3 090623`,
+            NAAminusEXP3 = `NAA 090723`-`EXP3 090623`,
+            NAAminusALT1 = `NAA 090723`-`ALT1 090923`,
+            NAAminusALT2v1wTUCP = `NAA 090723`-`ALT2 v1 090723 wTUCP`,
+            NAAminusALT2v1woTUCP = `NAA 090723`-`ALT2 v1 090723 woTUCP`,
+            NAAminusALT2v2noTUCP = `NAA 090723`-`ALT2 v2 090723 noTUCP`,
+            NAAminusALT2v3noTUCP = `NAA 090723`-`ALT2 v3 090723 noTUCP`,
+            NAAminusALT4 = `NAA 090723`-`ALT4 090823`) %>% 
+  pivot_longer(NAAminusEXP1:NAAminusALT4) %>% 
+  mutate(month_f = factor(month, levels = c(10,11,12,1,2,3,4,5,6,7,8,9))) 
+
+view(diff_tbl)
+
+colnames(comp_tbl)
+
+ggplot(diff_tbl, aes(x=year, y=value, color = name)) + 
+  geom_point()
+
+#list of column headers----
 # "Date",
 # "DO",                         
 # "Alt",                        
@@ -212,4 +254,3 @@ write_excel_csv(expt_tbl, "Data/tableforcopyandpaste.csv")
 # "dinflow_Minus_totalEXP_CFS",    
 # "dinflow_Minus_totalEXP_percent",
 # "month"
-
