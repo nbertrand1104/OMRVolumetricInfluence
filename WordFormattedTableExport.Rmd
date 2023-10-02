@@ -1,0 +1,27 @@
+---
+#install officedown package before running this YAML #portion of the script
+date: "`r Sys.Date()`"
+title: "Formatted Table for copying into Attachments"
+output: 
+  officedown::rdocx_document:
+        reference_docx: C:/Users/nbertrand/Desktop/Bertrand/GitHub/OMRVolumetricInfluence/TableTemplate.docx
+        tables:
+          style: StyleAlpha
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+library(officedown)
+library(officer)
+library(readr)
+```
+
+### Table 1
+
+```{r tab.cap="TableName", tab.id="Table1", echo=FALSE}
+
+tableforcopyandpaste <- read_csv("Data/tableforcopyandpaste.csv")
+
+tableforcopyandpaste
+```
