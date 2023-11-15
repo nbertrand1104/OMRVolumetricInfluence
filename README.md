@@ -1,0 +1,3 @@
+# OMRVolumetricInfluence
+OMR Volumetric Influence
+The script used to generate these documents was developed by Bureau of Reclamation for the purposes of providing content to the documentation during the reiniation of consultation . The resulting content is for the purpose of comparing proposed alternatives and does not imply a specific policy position. No warranty expressed or implied is made regarding the display or utility of the code for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty. The U.S. Bureau of Reclamation or the U.S. Government shall not be held liable for improper or incorrect use of the code described and/or contained herein. 
